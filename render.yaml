@@ -20,7 +20,7 @@
     plan: starter
     region: oregon
     buildCommand: chmod +x build.sh && ./build.sh
-    startCommand: gunicorn farmetrics.wsgi:application --bind 0.0.0.0: --workers 2 --timeout 120 --log-level info
+    startCommand: "gunicorn farmetrics.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --log-level info"
     healthCheckPath: /api/docs/
     autoDeploy: true
     envVars:
