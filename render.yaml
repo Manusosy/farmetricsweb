@@ -1,13 +1,10 @@
-services:
+﻿services:
   # PostgreSQL Database with PostGIS
   - type: pserv
     name: farmetrics-db
     plan: starter
     region: oregon
     ipAllowList: []
-    databaseName: farmetrics_db
-    databaseUser: farmetrics_user
-    postgresMajorVersion: 15
 
   # Redis for Cache and Celery
   - type: redis
@@ -22,9 +19,8 @@ services:
     runtime: python
     plan: starter
     region: oregon
-    rootDir: backend
     buildCommand: chmod +x build.sh && ./build.sh
-    startCommand: gunicorn farmetrics.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --log-level info
+    startCommand: gunicorn farmetrics.wsgi:application --bind 0.0.0.0: --workers 2 --timeout 120 --log-level info
     healthCheckPath: /api/docs/
     autoDeploy: true
     envVars:
@@ -85,4 +81,3 @@ services:
         sync: false
       - key: ENVIRONMENT
         value: production
-
