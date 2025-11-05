@@ -1,26 +1,11 @@
 ﻿services:
-  # PostgreSQL Database with PostGIS
-  - type: pserv
-    name: farmetrics-db
-    plan: starter
-    region: oregon
-
-  # Redis for Cache and Celery
-  - type: redis
-    name: farmetrics-redis
-    plan: starter
-    region: oregon
-    maxmemoryPolicy: allkeys-lru
-    ipAllowList: []
-
-  # Django Web Service
   - type: web
     name: farmetrics-backend
     runtime: python
     plan: starter
     region: oregon
     buildCommand: chmod +x build.sh && ./build.sh
-    startCommand: "gunicorn farmetrics.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --log-level info"
+    startCommand: gunicorn farmetrics.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     healthCheckPath: /api/docs/
     autoDeploy: true
     envVars:
@@ -31,53 +16,14 @@
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
-        value: "False"
+        value: False
       - key: ALLOWED_HOSTS
         value: farmetrics-backend.onrender.com
       - key: DJANGO_SETTINGS_MODULE
         value: farmetrics.settings.production
       - key: DATABASE_URL
-        fromDatabase:
-          name: farmetrics-db
-          property: connectionString
-      - key: CELERY_BROKER_URL
-        fromService:
-          type: redis
-          name: farmetrics-redis
-          property: connectionString
-      - key: CELERY_RESULT_BACKEND
-        fromService:
-          type: redis
-          name: farmetrics-redis
-          property: connectionString
+        sync: false
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: farmetrics-redis
-          property: connectionString
+        sync: false
       - key: CORS_ALLOWED_ORIGINS
-        value: https://your-frontend-domain.com,http://localhost:3000
-      - key: USE_CLOUDINARY
-        value: "False"
-      - key: CLOUDINARY_CLOUD_NAME
-        sync: false
-      - key: CLOUDINARY_API_KEY
-        sync: false
-      - key: CLOUDINARY_API_SECRET
-        sync: false
-      - key: EMAIL_HOST
-        value: smtp.gmail.com
-      - key: EMAIL_PORT
-        value: "587"
-      - key: EMAIL_USE_TLS
-        value: "True"
-      - key: EMAIL_HOST_USER
-        sync: false
-      - key: EMAIL_HOST_PASSWORD
-        sync: false
-      - key: DEFAULT_FROM_EMAIL
-        value: noreply@farmetrics.com
-      - key: SENTRY_DSN
-        sync: false
-      - key: ENVIRONMENT
-        value: production
+        value: https://your-frontend-domain.com
